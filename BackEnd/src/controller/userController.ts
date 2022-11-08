@@ -7,7 +7,7 @@ const register = async (req: Request, res: Response) => {
 	const name = req.body.name;
 	const email = req.body.email;
 	let password = req.body.password;
-	password = CryptoJS.AES.encrypt(password, 'secret key 123').toString();
+	password = CryptoJS.AES.encrypt(password, 'PasswordSecret').toString();
 	const newUser = new User({ name, email, password });
 	await newUser.save();
 	const token = jwt.sign({ id: newUser._id }, 'SecretoToken', {
@@ -21,7 +21,7 @@ const login = async (req: Request, res : Response) => {
 	if (!user) {
 		return res.status(404).send('The email does not exist');
 	}
-	const validPassword = CryptoJS.AES.decrypt(user.password, 'secret key 123').toString(CryptoJS.enc.Utf8);
+	const validPassword = CryptoJS.AES.decrypt(user.password, 'PasswordSecret').toString(CryptoJS.enc.Utf8);
 	if (!validPassword) {
 		return res.status(401).json({ auth: false, token: null });
 	}
@@ -70,9 +70,9 @@ const changePass = async (req: Request, res: Response) => {
 	if (!user) {
 		return res.status(404).send('No user found.');
 	}
-	if(req.body.password === CryptoJS.AES.decrypt(user.password, 'secret key 123').toString(CryptoJS.enc.Utf8)){
+	if(req.body.password === CryptoJS.AES.decrypt(user.password, 'PasswordSecret').toString(CryptoJS.enc.Utf8)){
 		let newpassword = req.body.newpassword;
-		newpassword = CryptoJS.AES.encrypt(newpassword, 'secret key 123').toString();
+		newpassword = CryptoJS.AES.encrypt(newpassword, 'PasswordSecret').toString();
 		user.password = newpassword;
 		await user.save();
 		res.json({ status: 'User Updated' });
